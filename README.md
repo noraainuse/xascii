@@ -29,7 +29,7 @@ curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
 rustc --version
 cargo --version
 ```
-# System-specific Dependencies
+## System-specific Dependencies
 ### Windows
 - Install Visual Studio Build Tools
 - Install Git for Windows
