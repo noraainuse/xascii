@@ -4,7 +4,7 @@ use image::{DynamicImage, GenericImageView, imageops::FilterType, ImageBuffer, R
 use termcolor::{Color, ColorChoice, ColorSpec, StandardStream, WriteColor};
 use terminal_size::terminal_size;
 use ffmpeg_next as ffmpeg;
-use crossterm::{execute, terminal, ExecutableCommand};
+use crossterm::{terminal, ExecutableCommand};
 use crossterm::terminal::{Clear, ClearType};
 
 fn main() {
@@ -93,8 +93,7 @@ fn frame_to_image(frame: &ffmpeg::frame::Video) -> ImageBuffer<Rgb<u8>, Vec<u8>>
     let width = frame.width();
     let height = frame.height();
     let mut buf = vec![0; (width * height * 3) as usize];
-
-    let data = frame.data(0);
+    let data = frame.data(0); // This directly gets the frame data.
     let stride = frame.stride(0);
     for (i, chunk) in buf.chunks_mut(3).enumerate() {
         let y = i / width as usize;

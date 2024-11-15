@@ -1,9 +1,9 @@
 # Xascii
-Simple tools for image to ascii
-xascii is simple tools that can convert image files into ascii  (*￣▽￣)b
+Simple tools Convert both image and video to ascii ヽ(°〇°)ﾉ
+- xascii is simple tools that can convert image and video files into ascii  (*￣▽￣)b
 
 ### Features
-- Fast image processing written in Rust
+- Fast image and video processing written in Rust
 - Supports multiple image formats (PNG, JPG, JPEG, GIF)
 - Customizable ASCII character sets
 - Preserves aspect ratio
