@@ -15,6 +15,10 @@ xascii is simple tools that can convert image files into ascii (*￣▽￣)b
 git clone https://github.com/noraainuse/xascii
 cd xascii
 ```
+### Build and install
+```bash
+cargo build --release
+```
 ### Install rustup (Rust toolchain manager) | Skip if you have installed
 ```bash
 curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
@@ -25,12 +29,6 @@ curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
 rustc --version
 cargo --version
 ```
-### Build and install
-```bash
-cargo build --release
-cargo install --path .
-```
-
 # System-specific Dependencies
 ### Windows
 - Install Visual Studio Build Tools
@@ -54,9 +52,16 @@ sudo dnf groupinstall "Development Tools"
 ```
 # Troubleshooting
 If you encounter any issues:
-- Ensure your Rust toolchain is up to date: ```bash rustup update ```
+- Ensure your Rust toolchain is up to date:
+```bash
+rustup update
+```
 - Clear Cargo cache:
-- ```bash cargo clean ```
+  ```bash
+  cargo clean
+   ```
 - Check system dependencies
 - Try rebuilding with verbose output:
-  ```bash cargo build -v ```
+```bash
+   cargo build -v
+  ```
