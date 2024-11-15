@@ -17,6 +17,7 @@ cd xascii
 ### Build and install
 ```bash
 cargo build --release
+cargo run
 ```
 ### Install rustup (Rust toolchain manager) | Skip if you have installed
 ```bash
