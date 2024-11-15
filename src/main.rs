@@ -4,6 +4,8 @@ use image::{DynamicImage, GenericImageView, imageops::FilterType, ImageBuffer, R
 use termcolor::{Color, ColorChoice, ColorSpec, StandardStream, WriteColor};
 use terminal_size::terminal_size;
 use ffmpeg_next as ffmpeg;
+use crossterm::{execute, terminal, ExecutableCommand};
+use crossterm::terminal::{Clear, ClearType};
 
 fn main() {
     println!("Enter the path to the file you want to convert (image or video):");
@@ -61,6 +63,9 @@ fn process_video(input_path: &str) {
     let target_width = (target_height as f32 * character_aspect_ratio) as u32;
 
     let mut frame_index = 0;
+    std::io::stdout().execute(terminal::EnterAlternateScreen).unwrap();
+    terminal::enable_raw_mode().unwrap();
+
     for (stream, packet) in ictx.packets() {
         if stream.index() == video_stream_index {
             decoder.send_packet(&packet).unwrap();
@@ -73,11 +78,15 @@ fn process_video(input_path: &str) {
 
                 let img = frame_to_image(&frame);
                 let resized_img = DynamicImage::ImageRgb8(img).resize_exact(target_width, target_height, FilterType::Lanczos3);
+                std::io::stdout().execute(Clear(ClearType::All)).unwrap();
                 display_ascii(&resized_img);
                 std::thread::sleep(Duration::from_millis(33)); // Simulate ~30 FPS
             }
         }
     }
+
+    std::io::stdout().execute(terminal::LeaveAlternateScreen).unwrap();
+    terminal::disable_raw_mode().unwrap();
 }
 
 fn frame_to_image(frame: &ffmpeg::frame::Video) -> ImageBuffer<Rgb<u8>, Vec<u8>> {
