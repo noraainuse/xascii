@@ -20,8 +20,12 @@ curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
 ```
 
 ### Verify installation
+```bash
 rustc --version
+```
+```bash
 cargo --version
+```
 ### Build and install
 ```bash
 cargo build --release
@@ -37,11 +41,15 @@ cargo install --path .
 sudo apt-get update
 sudo apt-get install build-essential pkg-config
 ```
-### Fedora
-```bash
-sudo dnf groupinstall "Development Tools"
-```
 ### Arch Linux
 ```bash
 sudo pacman -S base-devel
+```
+### macOS
+```bash
+xcode-select --install
+```
+### Fedora
+```bash
+sudo dnf groupinstall "Development Tools"
 ```
