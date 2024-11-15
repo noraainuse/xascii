@@ -1,6 +1,7 @@
 # Xascii
 Simple tools for image to ascii
-xascii is simple tools that can convert image files into ascii
+xascii is simple tools that can convert image files into ascii (*￣▽￣)b
+
 ### Features
 - Fast image processing written in Rust
 - Supports multiple image formats (PNG, JPG, JPEG, GIF)
@@ -22,8 +23,6 @@ curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
 ### Verify installation
 ```bash
 rustc --version
-```
-```bash
 cargo --version
 ```
 ### Build and install
