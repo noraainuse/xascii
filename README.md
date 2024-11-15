@@ -57,11 +57,11 @@ If you encounter any issues:
 rustup update
 ```
 - Clear Cargo cache:
-  ```bash
-  cargo clean
-   ```
+```bash
+cargo clean
+```
 - Check system dependencies
 - Try rebuilding with verbose output:
 ```bash
-   cargo build -v
-  ```
+cargo build -v
+```
