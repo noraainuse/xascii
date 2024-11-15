@@ -1,17 +1,20 @@
 use std::io::{self, Write};
 use std::time::Duration;
+use std::fs::{create_dir_all, File};
+use std::path::{Path};
 use image::{DynamicImage, GenericImageView, imageops::FilterType, ImageBuffer, Rgb, Rgba};
 use termcolor::{Color, ColorChoice, ColorSpec, StandardStream, WriteColor};
 use terminal_size::terminal_size;
 use ffmpeg_next as ffmpeg;
 use crossterm::{terminal, ExecutableCommand};
-use crossterm::terminal::{Clear, ClearType};
 
 fn main() {
     println!("Enter the path to the file you want to convert (image or video):");
     let mut input = String::new();
     io::stdin().read_line(&mut input).expect("Failed to read input");
     let input_path = input.trim();
+
+    create_output_directory();  // Create the output folder
 
     if input_path.ends_with(".mp4") || input_path.ends_with(".avi") || input_path.ends_with(".mkv") {
         process_video(input_path);
@@ -38,7 +41,8 @@ fn process_image(input_path: &str) {
     let target_width = (target_height as f32 * character_aspect_ratio) as u32;
 
     let resized_img = img.resize_exact(target_width, target_height, FilterType::Lanczos3);
-    display_ascii(&resized_img);
+    display_ascii(&resized_img);  // Display ASCII in the terminal
+    save_ascii_to_file(input_path, &resized_img);  // Save to a text file quietly
 }
 
 fn process_video(input_path: &str) {
@@ -78,8 +82,8 @@ fn process_video(input_path: &str) {
 
                 let img = frame_to_image(&frame);
                 let resized_img = DynamicImage::ImageRgb8(img).resize_exact(target_width, target_height, FilterType::Lanczos3);
-                std::io::stdout().execute(Clear(ClearType::All)).unwrap();
-                display_ascii(&resized_img);
+                display_ascii(&resized_img); // Display each frame in the terminal
+                save_ascii_to_file(&format!("frame_{}.txt", frame_index), &resized_img);  // Save the frame to a text file quietly
                 std::thread::sleep(Duration::from_millis(33)); // Simulate ~30 FPS
             }
         }
@@ -107,6 +111,35 @@ fn frame_to_image(frame: &ffmpeg::frame::Video) -> ImageBuffer<Rgb<u8>, Vec<u8>>
     }
 
     ImageBuffer::from_vec(width, height, buf).expect("Failed to create ImageBuffer")
+}
+
+fn save_ascii_to_file(input_path: &str, img: &DynamicImage) {
+    let (ascii_art, _) = image_to_ascii_with_color(img);
+    
+    let output_filename = get_output_filename(input_path);
+    let file_path = Path::new("ascii-results").join(output_filename);
+    
+    let mut file = File::create(file_path).expect("Failed to create file");
+
+    for line in ascii_art {
+        writeln!(file, "{}", line).expect("Failed to write to file");
+    }
+}
+
+fn get_output_filename(input_path: &str) -> String {
+    let path = Path::new(input_path);
+    let file_stem = path.file_stem().unwrap().to_str().unwrap(); // Fixed type mismatch here
+    let extension = path.extension().unwrap_or_else(|| std::ffi::OsStr::new("")).to_str().unwrap(); // Fixed type mismatch here
+    
+    // Replace the extension with ".txt"
+    format!("{}.txt", file_stem)
+}
+
+fn create_output_directory() {
+    let output_dir = Path::new("ascii-results");
+    if !output_dir.exists() {
+        create_dir_all(output_dir).expect("Failed to create output directory");
+    }
 }
 
 fn display_ascii(img: &DynamicImage) {
