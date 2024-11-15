@@ -52,3 +52,11 @@ xcode-select --install
 ```bash
 sudo dnf groupinstall "Development Tools"
 ```
+# Troubleshooting
+If you encounter any issues:
+- Ensure your Rust toolchain is up to date: ```bash rustup update ```
+- Clear Cargo cache:
+- ```bash cargo clean ```
+- Check system dependencies
+- Try rebuilding with verbose output:
+  ```bash cargo build -v ```
