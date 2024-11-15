@@ -33,22 +33,23 @@ cargo --version
 ### Windows
 - Install Visual Studio Build Tools
 - Install Git for Windows
-### Ubuntu/Debian
+### Linux 
+- Ubuntu/Debian
 ```bash
 sudo apt-get update
 sudo apt-get install build-essential pkg-config
 ```
-### Arch Linux
+- Arch linux
 ```bash
 sudo pacman -S base-devel
+```
+- Fedora
+```bash
+sudo dnf groupinstall "Development Tools"
 ```
 ### macOS
 ```bash
 xcode-select --install
-```
-### Fedora
-```bash
-sudo dnf groupinstall "Development Tools"
 ```
 # Troubleshooting
 If you encounter any issues:
