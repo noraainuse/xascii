@@ -3,7 +3,7 @@ Simple tools Convert both image and video to ascii ヽ(°〇°)ﾉ
 - xascii is simple tools that can convert image files into ascii  (*￣▽￣)b
 ### Features
 - Fast image and video processing written in Rust
-- Supports multiple image formats (PNG, JPG, JPEG, GIF)
+- Supports multiple image and video formats (PNG, JPG, JPEG, GIF , MP4 , MOV , MKV , ETC)
 - Customizable ASCII character sets
 - Preserves aspect ratio
 - Terminal-friendly output
