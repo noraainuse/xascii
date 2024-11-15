@@ -129,7 +129,7 @@ fn save_ascii_to_file(input_path: &str, img: &DynamicImage) {
 fn get_output_filename(input_path: &str) -> String {
     let path = Path::new(input_path);
     let file_stem = path.file_stem().unwrap().to_str().unwrap(); // Fixed type mismatch here
-    let extension = path.extension().unwrap_or_else(|| std::ffi::OsStr::new("")).to_str().unwrap(); // Fixed type mismatch here
+    let _extension = path.extension().unwrap_or_else(|| std::ffi::OsStr::new("")).to_str().unwrap(); // Prefix with `_` to suppress warning
     
     // Replace the extension with ".txt"
     format!("{}.txt", file_stem)
