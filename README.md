@@ -1,6 +1,7 @@
 # Xascii
 Simple tools for image to ascii
 xascii is simple tools that can convert image files into ascii  (*￣▽￣)b
+![Alt text](swappy-20241115-190010.png)
 
 ### Features
 - Fast image processing written in Rust
