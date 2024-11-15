@@ -14,6 +14,14 @@ xascii is simple tools that can convert image files into ascii
 git clone https://github.com/noraainuse/xascii
 cd xascii
 ```
+### Install rustup (Rust toolchain manager) | Skip if you have installed
+```bash
+curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+```
+
+### Verify installation
+rustc --version
+cargo --version
 ### Build and install
 ```bash
 cargo build --release
