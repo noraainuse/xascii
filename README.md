@@ -1,6 +1,6 @@
 # Xascii
 Simple tools for image to ascii
-xascii is simple tools that can convert image files into ascii (*￣▽￣)b
+xascii is simple tools that can convert image files into ascii  (*￣▽￣)b
 
 ### Features
 - Fast image processing written in Rust
