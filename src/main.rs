@@ -1,14 +1,24 @@
 use std::io::{self, Write};
-use image::{DynamicImage, GenericImageView, imageops::FilterType, Rgba};
+use std::time::Duration;
+use image::{DynamicImage, GenericImageView, imageops::FilterType, ImageBuffer, Rgb, Rgba};
 use termcolor::{Color, ColorChoice, ColorSpec, StandardStream, WriteColor};
-use terminal_size::{terminal_size, Height};
+use terminal_size::terminal_size;
+use ffmpeg_next as ffmpeg;
 
 fn main() {
+    println!("Enter the path to the file you want to convert (image or video):");
     let mut input = String::new();
-    println!("Enter the path to the image you want to convert:");
-    io::stdin().read_line(&mut input).expect("Failed to read line");
+    io::stdin().read_line(&mut input).expect("Failed to read input");
     let input_path = input.trim();
 
+    if input_path.ends_with(".mp4") || input_path.ends_with(".avi") || input_path.ends_with(".mkv") {
+        process_video(input_path);
+    } else {
+        process_image(input_path);
+    }
+}
+
+fn process_image(input_path: &str) {
     let img = match image::open(input_path) {
         Ok(i) => i,
         Err(_) => {
@@ -25,8 +35,74 @@ fn main() {
     let target_height = term_height.min(100);
     let target_width = (target_height as f32 * character_aspect_ratio) as u32;
 
-    let resized_img = img.resize(target_width, target_height, FilterType::Lanczos3);
-    let (ascii_art, colors) = image_to_ascii_with_color(&resized_img);
+    let resized_img = img.resize_exact(target_width, target_height, FilterType::Lanczos3);
+    display_ascii(&resized_img);
+}
+
+fn process_video(input_path: &str) {
+    ffmpeg::init().expect("Failed to initialize ffmpeg");
+    let mut ictx = ffmpeg::format::input(&input_path).expect("Failed to open video file");
+
+    let video_stream_index = ictx
+        .streams()
+        .best(ffmpeg::media::Type::Video)
+        .expect("Failed to find video stream")
+        .index();
+
+    let codec = ffmpeg::codec::context::Context::from_parameters(ictx.stream(video_stream_index).unwrap().parameters()).unwrap();
+    let mut decoder = codec.decoder().video().unwrap();
+
+    let term_height = terminal_size()
+        .map(|(_, h)| h.0 as u32)
+        .unwrap_or(50);
+
+    let character_aspect_ratio = 2.5;
+    let target_height = term_height.min(50);
+    let target_width = (target_height as f32 * character_aspect_ratio) as u32;
+
+    let mut frame_index = 0;
+    for (stream, packet) in ictx.packets() {
+        if stream.index() == video_stream_index {
+            decoder.send_packet(&packet).unwrap();
+            let mut frame = ffmpeg::frame::Video::empty();
+            while decoder.receive_frame(&mut frame).is_ok() {
+                frame_index += 1;
+                if frame_index % 2 != 0 {
+                    continue; // Skip every second frame for performance
+                }
+
+                let img = frame_to_image(&frame);
+                let resized_img = DynamicImage::ImageRgb8(img).resize_exact(target_width, target_height, FilterType::Lanczos3);
+                display_ascii(&resized_img);
+                std::thread::sleep(Duration::from_millis(33)); // Simulate ~30 FPS
+            }
+        }
+    }
+}
+
+fn frame_to_image(frame: &ffmpeg::frame::Video) -> ImageBuffer<Rgb<u8>, Vec<u8>> {
+    let width = frame.width();
+    let height = frame.height();
+    let mut buf = vec![0; (width * height * 3) as usize];
+
+    let data = frame.data(0);
+    let stride = frame.stride(0);
+    for (i, chunk) in buf.chunks_mut(3).enumerate() {
+        let y = i / width as usize;
+        let x = i % width as usize;
+        let index = y * stride + x * 3;
+        if index + 2 < data.len() {
+            chunk[0] = data[index];     // Red
+            chunk[1] = data[index + 1]; // Green
+            chunk[2] = data[index + 2]; // Blue
+        }
+    }
+
+    ImageBuffer::from_vec(width, height, buf).expect("Failed to create ImageBuffer")
+}
+
+fn display_ascii(img: &DynamicImage) {
+    let (ascii_art, colors) = image_to_ascii_with_color(img);
 
     let mut stdout = StandardStream::stdout(ColorChoice::Auto);
     for (line, color_line) in ascii_art.iter().zip(colors.iter()) {
@@ -44,7 +120,7 @@ fn image_to_ascii_with_color(img: &DynamicImage) -> (Vec<String>, Vec<Vec<Rgba<u
     let chars = [
         " ", ".", "·", ":", "!", "~", "*", "=", "$", "#", "@"
     ];
-    
+
     let mut ascii_lines = Vec::new();
     let mut color_lines = Vec::new();
     let (width, height) = img.dimensions();
